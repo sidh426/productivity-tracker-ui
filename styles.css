@@ -1,16 +1,328 @@
-body {
-    font-family: Arial, sans-serif;
+/* ── Reset & Variables ── */
+*, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
-    background-color: #f4f4f4;
+    padding: 0;
 }
 
+:root {
+    --accent: #6366f1;
+    --accent-dark: #4f46e5;
+    --accent-light: #e0e7ff;
+    --bg: #f8f9fc;
+    --surface: #ffffff;
+    --border: #e5e7eb;
+    --text: #111827;
+    --muted: #6b7280;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --radius: 10px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Nav ── */
 header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    text-align: center;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
+.logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+}
+
+nav {
+    display: flex;
+    gap: 0.25rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+nav a:hover {
+    background: var(--bg);
+    color: var(--text);
+}
+
+nav a.active {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+}
+
+/* ── Main layout ── */
 main {
-    padding: 2rem;
+    flex: 1;
+    max-width: 780px;
+    width: 100%;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+}
+
+/* ── Page hero ── */
+.hero {
+    margin-bottom: 2rem;
+}
+
+.hero h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.hero p {
+    color: var(--muted);
+    margin-top: 0.35rem;
+    font-size: 0.95rem;
+}
+
+/* ── Cards ── */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+/* ── Task input ── */
+.task-form {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.task-form input {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+}
+
+.task-form input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+.task-form input::placeholder {
+    color: var(--muted);
+}
+
+.btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.btn:hover {
+    background: var(--accent-dark);
+}
+
+/* ── Task list ── */
+.task-list {
+    list-style: none;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+    transition: border-color 0.15s;
+}
+
+.task-item:hover {
+    border-color: #d1d5db;
+}
+
+.task-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.task-item .task-label {
+    flex: 1;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.task-item.done .task-label {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+.task-item .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #d1d5db;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0 0.2rem;
+    transition: color 0.15s;
+}
+
+.task-item .delete-btn:hover {
+    color: var(--danger);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.875rem;
+    padding: 1.5rem 0 0.5rem;
+}
+
+/* ── Stats bar ── */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow);
+}
+
+.stat .value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.stat .label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+}
+
+/* ── About page ── */
+.about-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.about-section p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #374151;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.tag {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+}
+
+/* ── Footer ── */
+footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+}
+
+/* ── Responsive ── */
+@media (max-width: 540px) {
+    header {
+        padding: 0 1rem;
+    }
+
+    main {
+        margin: 1.5rem auto;
+    }
+
+    .stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.6rem;
+    }
+
+    .stat .value {
+        font-size: 1.4rem;
+    }
+
+    .task-form {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
 }
