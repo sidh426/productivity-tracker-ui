@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Productivity Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <a class="logo" href="index.html">&#9675; Productivity Tracker</a>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html" class="active">About</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="hero">
+            <h1>About</h1>
+            <p>A little background on this project</p>
+        </div>
+
+        <div class="about-section">
+            <div class="card">
+                <h2>What is this?</h2>
+                <p>
+                    Productivity Tracker is a lightweight, browser-based task manager built as a semester
+                    project for CMPA4403. It lets you log your daily tasks, check them off as you complete
+                    them, and keep a clear picture of what still needs to get done — all without signing
+                    in or installing anything.
+                </p>
+                <p style="margin-top: 0.75rem;">
+                    Tasks are saved in your browser's local storage, so they persist between visits on
+                    the same device.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>Tools used</h2>
+                <div class="tag-list">
+                    <span class="tag">HTML5</span>
+                    <span class="tag">CSS3</span>
+                    <span class="tag">Flexbox &amp; Grid</span>
+                    <span class="tag">Vanilla JavaScript</span>
+                    <span class="tag">localStorage API</span>
+                    <span class="tag">GitHub Pages</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Features</h2>
+                <p>
+                    Add tasks with a single keystroke, check them off, and remove them when they're no
+                    longer relevant. A live stats bar at the top of the home page shows your total,
+                    completed, and remaining task count at a glance. The layout is fully responsive and
+                    works on mobile, tablet, and desktop.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>Challenges</h2>
+                <p>
+                    The trickiest part was making the task list feel snappy without a JavaScript
+                    framework — re-rendering the list on every state change while keeping the DOM tidy
+                    took a few iterations. Getting the responsive grid to collapse gracefully on small
+                    screens also required some careful testing across device sizes.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        CMPA4403 &mdash; Productivity Tracker
+    </footer>
+
+</body>
+</html>
