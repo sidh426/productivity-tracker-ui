@@ -9,33 +9,146 @@
 <body>
 
     <header>
-        <h1>Productivity Tracker</h1>
+        <a class="logo" href="index.html">&#9675; Productivity Tracker</a>
+        <nav>
+            <a href="index.html" class="active">Home</a>
+            <a href="about.html">About</a>
+        </nav>
     </header>
 
     <main>
-        <section>
-            <h2>Dashboard</h2>
-            <p>Track your daily tasks and goals in one place.</p>
-        </section>
+        <div class="hero">
+            <h1>Today's Tasks</h1>
+            <p id="date-display"></p>
+        </div>
 
-        <section>
-            <h2>Tasks</h2>
-            <ul>
-                <li>Complete CMPA4403 project</li>
-                <li>Review lecture notes</li>
-                <li>Submit Exercise 03</li>
-            </ul>
-        </section>
+        <div class="stats">
+            <div class="stat">
+                <div class="value" id="stat-total">0</div>
+                <div class="label">Total</div>
+            </div>
+            <div class="stat">
+                <div class="value" id="stat-done">0</div>
+                <div class="label">Done</div>
+            </div>
+            <div class="stat">
+                <div class="value" id="stat-left">0</div>
+                <div class="label">Left</div>
+            </div>
+        </div>
 
-        <section>
-            <h2>Goals</h2>
-            <ul>
-                <li>Build a responsive UI</li>
-                <li>Deploy using GitHub Pages</li>
-                <li>Set up continuous deployment</li>
+        <div class="card">
+            <h2>Add a task</h2>
+            <form class="task-form" id="task-form">
+                <input
+                    type="text"
+                    id="task-input"
+                    placeholder="e.g. Review lecture notes..."
+                    autocomplete="off"
+                    maxlength="120"
+                />
+                <button type="submit" class="btn">+ Add</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Task list</h2>
+            <ul class="task-list" id="task-list">
+                <li class="empty-state" id="empty-msg">No tasks yet — add one above!</li>
             </ul>
-        </section>
+        </div>
     </main>
+
+    <footer>
+        CMPA4403 &mdash; Productivity Tracker
+    </footer>
+
+    <script>
+        // ── Date display ──
+        const dateEl = document.getElementById('date-display');
+        dateEl.textContent = new Date().toLocaleDateString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // ── State (persisted in localStorage) ──
+        const STORAGE_KEY = 'pt_tasks';
+        let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+        function save() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        }
+
+        // ── Render ──
+        function render() {
+            const list = document.getElementById('task-list');
+            const emptyMsg = document.getElementById('empty-msg');
+
+            // stats
+            const total = tasks.length;
+            const done = tasks.filter(t => t.done).length;
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-done').textContent = done;
+            document.getElementById('stat-left').textContent = total - done;
+
+            // clear list (keep empty-msg element)
+            Array.from(list.querySelectorAll('.task-item')).forEach(el => el.remove());
+            emptyMsg.style.display = total === 0 ? 'block' : 'none';
+
+            tasks.forEach((task, i) => {
+                const li = document.createElement('li');
+                li.className = 'task-item' + (task.done ? ' done' : '');
+
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.checked = task.done;
+                cb.addEventListener('change', () => {
+                    tasks[i].done = cb.checked;
+                    save();
+                    render();
+                });
+
+                const label = document.createElement('span');
+                label.className = 'task-label';
+                label.textContent = task.text;
+                label.addEventListener('click', () => {
+                    cb.checked = !cb.checked;
+                    tasks[i].done = cb.checked;
+                    save();
+                    render();
+                });
+
+                const del = document.createElement('button');
+                del.className = 'delete-btn';
+                del.title = 'Remove';
+                del.innerHTML = '&#10005;';
+                del.addEventListener('click', () => {
+                    tasks.splice(i, 1);
+                    save();
+                    render();
+                });
+
+                li.appendChild(cb);
+                li.appendChild(label);
+                li.appendChild(del);
+                list.appendChild(li);
+            });
+        }
+
+        // ── Add task ──
+        document.getElementById('task-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const input = document.getElementById('task-input');
+            const text = input.value.trim();
+            if (!text) return;
+            tasks.push({ text, done: false });
+            save();
+            render();
+            input.value = '';
+            input.focus();
+        });
+
+        render();
+    </script>
 
 </body>
 </html>
