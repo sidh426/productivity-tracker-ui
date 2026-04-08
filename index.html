@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productivity Tracker</title>
+    <!-- Anti-flash: apply saved theme before paint -->
+    <script>(function(){var t=localStorage.getItem('pt_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <header>
         <a class="logo" href="index.html">&#9675; Productivity Tracker</a>
-        <nav>
-            <a href="index.html" class="active">Home</a>
-            <a href="about.html">About</a>
-        </nav>
+        <div class="header-right">
+            <nav>
+                <a href="index.html" class="active">Home</a>
+                <a href="about.html">About</a>
+            </nav>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">🌙</button>
+        </div>
     </header>
 
     <main>
@@ -47,12 +52,23 @@
                     autocomplete="off"
                     maxlength="120"
                 />
+                <select id="cat-select">
+                    <option value="school">School</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                </select>
                 <button type="submit" class="btn">+ Add</button>
             </form>
         </div>
 
         <div class="card">
             <h2>Task list</h2>
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="school">School</button>
+                <button class="filter-btn" data-filter="work">Work</button>
+                <button class="filter-btn" data-filter="personal">Personal</button>
+            </div>
             <ul class="task-list" id="task-list">
                 <li class="empty-state" id="empty-msg">No tasks yet — add one above!</li>
             </ul>
@@ -65,70 +81,109 @@
 
     <script>
         // ── Date display ──
-        const dateEl = document.getElementById('date-display');
-        dateEl.textContent = new Date().toLocaleDateString('en-US', {
+        document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', {
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         });
 
-        // ── State (persisted in localStorage) ──
+        // ── Dark mode toggle ──
+        const themeToggle = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+
+        function syncToggleIcon() {
+            themeToggle.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+        }
+        syncToggleIcon();
+
+        themeToggle.addEventListener('click', () => {
+            const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('pt_theme', next);
+            syncToggleIcon();
+        });
+
+        // ── State ──
         const STORAGE_KEY = 'pt_tasks';
         let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        let activeFilter = 'all';
 
         function save() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
         }
+
+        // ── Filter tabs ──
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeFilter = btn.dataset.filter;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render();
+            });
+        });
 
         // ── Render ──
         function render() {
             const list = document.getElementById('task-list');
             const emptyMsg = document.getElementById('empty-msg');
 
-            // stats
+            // Stats always reflect all tasks
             const total = tasks.length;
-            const done = tasks.filter(t => t.done).length;
+            const done  = tasks.filter(t => t.done).length;
             document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-done').textContent = done;
-            document.getElementById('stat-left').textContent = total - done;
+            document.getElementById('stat-done').textContent  = done;
+            document.getElementById('stat-left').textContent  = total - done;
 
-            // clear list (keep empty-msg element)
+            // Clear existing items
             Array.from(list.querySelectorAll('.task-item')).forEach(el => el.remove());
-            emptyMsg.style.display = total === 0 ? 'block' : 'none';
 
-            tasks.forEach((task, i) => {
+            // Filter
+            const filtered = activeFilter === 'all'
+                ? tasks
+                : tasks.filter(t => t.category === activeFilter);
+
+            emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+            emptyMsg.textContent   = tasks.length === 0
+                ? 'No tasks yet — add one above!'
+                : `No ${activeFilter} tasks.`;
+
+            filtered.forEach(task => {
+                const realIdx = tasks.indexOf(task);
                 const li = document.createElement('li');
                 li.className = 'task-item' + (task.done ? ' done' : '');
+                if (task.category) li.dataset.category = task.category;
 
                 const cb = document.createElement('input');
-                cb.type = 'checkbox';
+                cb.type    = 'checkbox';
                 cb.checked = task.done;
                 cb.addEventListener('change', () => {
-                    tasks[i].done = cb.checked;
-                    save();
-                    render();
+                    tasks[realIdx].done = cb.checked;
+                    save(); render();
                 });
 
                 const label = document.createElement('span');
-                label.className = 'task-label';
+                label.className   = 'task-label';
                 label.textContent = task.text;
                 label.addEventListener('click', () => {
                     cb.checked = !cb.checked;
-                    tasks[i].done = cb.checked;
-                    save();
-                    render();
+                    tasks[realIdx].done = cb.checked;
+                    save(); render();
                 });
+
+                const badge = document.createElement('span');
+                badge.className   = `cat-badge cat-${task.category}`;
+                badge.textContent = task.category;
 
                 const del = document.createElement('button');
                 del.className = 'delete-btn';
-                del.title = 'Remove';
+                del.title     = 'Remove';
                 del.innerHTML = '&#10005;';
                 del.addEventListener('click', () => {
-                    tasks.splice(i, 1);
-                    save();
-                    render();
+                    tasks.splice(realIdx, 1);
+                    save(); render();
                 });
 
                 li.appendChild(cb);
                 li.appendChild(label);
+                if (task.category) li.appendChild(badge);
                 li.appendChild(del);
                 list.appendChild(li);
             });
@@ -138,9 +193,9 @@
         document.getElementById('task-form').addEventListener('submit', e => {
             e.preventDefault();
             const input = document.getElementById('task-input');
-            const text = input.value.trim();
+            const text  = input.value.trim();
             if (!text) return;
-            tasks.push({ text, done: false });
+            tasks.push({ text, done: false, category: document.getElementById('cat-select').value });
             save();
             render();
             input.value = '';

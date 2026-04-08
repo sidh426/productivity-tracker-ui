@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About — Productivity Tracker</title>
+    <!-- Anti-flash: apply saved theme before paint -->
+    <script>(function(){var t=localStorage.getItem('pt_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <header>
         <a class="logo" href="index.html">&#9675; Productivity Tracker</a>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="about.html" class="active">About</a>
-        </nav>
+        <div class="header-right">
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html" class="active">About</a>
+            </nav>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">🌙</button>
+        </div>
     </header>
 
     <main>
@@ -27,9 +32,9 @@
                 <h2>What is this?</h2>
                 <p>
                     Productivity Tracker is a lightweight, browser-based task manager built as a semester
-                    project for CMPA4403. It lets you log your daily tasks, check them off as you complete
-                    them, and keep a clear picture of what still needs to get done — all without signing
-                    in or installing anything.
+                    project for CMPA4403. It lets you log your daily tasks by category, check them off as
+                    you complete them, and keep a clear picture of what still needs to get done — all
+                    without signing in or installing anything.
                 </p>
                 <p style="margin-top: 0.75rem;">
                     Tasks are saved in your browser's local storage, so they persist between visits on
@@ -52,10 +57,11 @@
             <div class="card">
                 <h2>Features</h2>
                 <p>
-                    Add tasks with a single keystroke, check them off, and remove them when they're no
-                    longer relevant. A live stats bar at the top of the home page shows your total,
-                    completed, and remaining task count at a glance. The layout is fully responsive and
-                    works on mobile, tablet, and desktop.
+                    Add tasks with a single keystroke and assign them to a category — School, Work, or
+                    Personal — each colour-coded for instant recognition. Filter your list by category,
+                    check tasks off as you go, and remove them when they're no longer relevant. A live
+                    stats bar tracks your total, completed, and remaining task count. Dark mode is
+                    supported and remembers your preference between visits.
                 </p>
             </div>
 
@@ -63,9 +69,12 @@
                 <h2>Challenges</h2>
                 <p>
                     The trickiest part was making the task list feel snappy without a JavaScript
-                    framework — re-rendering the list on every state change while keeping the DOM tidy
-                    took a few iterations. Getting the responsive grid to collapse gracefully on small
-                    screens also required some careful testing across device sizes.
+                    framework — re-rendering on every state change while keeping the DOM tidy took a
+                    few iterations. Adding a filter layer on top of that without breaking index references
+                    into the underlying array required careful tracking of each task's real position.
+                    Preventing a flash of unstyled content when switching between dark and light mode
+                    also required an inline script in the document head to apply the saved theme before
+                    the first paint.
                 </p>
             </div>
         </div>
@@ -74,6 +83,23 @@
     <footer>
         CMPA4403 &mdash; Productivity Tracker
     </footer>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+
+        function syncToggleIcon() {
+            themeToggle.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+        }
+        syncToggleIcon();
+
+        themeToggle.addEventListener('click', () => {
+            const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('pt_theme', next);
+            syncToggleIcon();
+        });
+    </script>
 
 </body>
 </html>
