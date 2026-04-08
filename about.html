@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About — Productivity Tracker</title>
     <!-- Anti-flash: apply saved theme before paint -->
-    <script>(function(){var t=localStorage.getItem('pt_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <script>try{var t=localStorage.getItem('pt_theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}</script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -96,7 +96,7 @@
         themeToggle.addEventListener('click', () => {
             const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             root.setAttribute('data-theme', next);
-            localStorage.setItem('pt_theme', next);
+            try { localStorage.setItem('pt_theme', next); } catch(e) {}
             syncToggleIcon();
         });
     </script>
